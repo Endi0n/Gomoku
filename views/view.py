@@ -1,4 +1,4 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 import pygame
 
 
@@ -58,5 +58,6 @@ class View(ABC):
             pygame.draw.rect(self.screen, btn[1][-1], pygame.Rect(btn[0]))
             self.screen.blit(btn[1][0], btn[1][1])
 
+    @abstractmethod
     def render(self):
         pass
