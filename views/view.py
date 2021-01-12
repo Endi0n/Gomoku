@@ -9,10 +9,18 @@ class View(ABC):
         self.screen = screen
         self.buttons = []
 
-        self.setup()
-
     def handle_event(self, event):
-        pass
+        if event.type != pygame.MOUSEBUTTONDOWN:
+            return
+
+        mouse_x, mouse_y = pygame.mouse.get_pos()
+
+        for btn in self.buttons:
+            position, size = btn[0]
+            if position[0] <= mouse_x <= position[0] + size[0] \
+                    and position[1] <= mouse_y <= position[1] + size[1]:
+                btn[-1]()
+                return
 
     def fill(self, color):
         self.screen.fill(color)
@@ -49,9 +57,6 @@ class View(ABC):
         for btn in self.buttons:
             pygame.draw.rect(self.screen, btn[1][-1], pygame.Rect(btn[0]))
             self.screen.blit(btn[1][0], btn[1][1])
-
-    def setup(self):
-        pass
 
     def render(self):
         pass
