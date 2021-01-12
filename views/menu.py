@@ -1,10 +1,14 @@
-from .view import View
+from views.gomoku import GomokuView
 import globals
 
 
-class Menu(View):
+class Menu(GomokuView):
 
-    def render(self):
-        self.fill((200, 200, 200))
+    def setup(self):
+        self.add_button('Test', 16,
+                        (255, 255, 255), (70, 70, 70),
+                        (globals.WIDTH // 2, 120),
+                        (globals.WIDTH // 4 * 3, 30),
+                        None)
 
-        self.write('Gomoku', 30, (0, 0, 255), (globals.WIDTH // 2, 30), center=True)
+
