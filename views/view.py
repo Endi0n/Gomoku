@@ -31,7 +31,7 @@ class View(ABC):
             View.fonts[(font, size)] = pygame.font.SysFont(font, size)
         return View.fonts[(font, size)]
 
-    def write(self, text, size, color, position, font_name='timesnewroman', center=False):
+    def write(self, text, size, position, color, font_name='timesnewroman', center=False):
         font = View.load_font(font_name, size)
         text_surface = font.render(text, True, color)
 
@@ -41,6 +41,12 @@ class View(ABC):
             position = text_rect
 
         self.screen.blit(text_surface, position)
+
+    def draw_circle(self, size, position, color):
+        pygame.draw.circle(self.screen, color, position, size)
+
+    def draw_line(self, start_position, end_position, width, color):
+        pygame.draw.line(self.screen, color, start_position, end_position, width)
 
     def add_button(self, text, text_size, fg_color, bg_color, position, size, callback, font_name='timesnewroman'):
         font = View.load_font(font_name, text_size)

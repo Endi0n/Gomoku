@@ -5,7 +5,7 @@ import globals
 class Menu(GomokuView):
 
     def __init__(self, screen):
-        super(Menu, self).__init__(screen)
+        super().__init__(screen)
 
         self.pressed = False
         self.add_button('Make screen white', 16,

@@ -7,7 +7,8 @@ class Board:
     PIECE_B = 2
 
     def __init__(self, size=19):
-        self.board = np.zeros((size, size), dtype=np.uint8)
+        self.size = size
+        self.matrix = np.zeros((size, size), dtype=np.uint8)
 
     def place(self, location, piece):
         pass
@@ -42,4 +43,4 @@ class Board:
                 if winner:
                     return winner
 
-        return check_rows(self.board) or check_rows(self.board.T) or None
+        return check_rows(self.matrix) or check_rows(self.matrix.T) or None
