@@ -1,4 +1,5 @@
 from views.gomoku import GomokuView
+from strategies.heuristic import next_move
 import globals
 
 
@@ -27,11 +28,6 @@ class Game(GomokuView):
 
         self.top = Game.PADDING_TOP
 
-        self.board.matrix[0][0] = 1
-        self.board.matrix[0][1] = 2
-
-        self.board.matrix[14][1] = 2
-
     def handle_click(self, position):
         super().handle_click(position)
 
@@ -47,7 +43,9 @@ class Game(GomokuView):
 
         pos_x, pos_y = int(round(pos_x)), int(round(pos_y))
 
-        self.board.matrix[pos_x][pos_y] = 1
+        self.board.board[pos_x][pos_y] = 2
+        next_move(self.board)
+
 
     def render_board(self):
         for x in range(self.board.size):
@@ -62,10 +60,10 @@ class Game(GomokuView):
     def render_pieces(self):
         for i in range(self.board.size):
             for j in range(self.board.size):
-                if self.board.matrix[i][j] == 0:
+                if self.board.board[i][j] == 0:
                     continue
 
-                player1 = self.board.matrix[i][j] == 1
+                player1 = self.board.board[i][j] == 1
 
                 self.draw_circle(self.space // 2 - 2,
                                  (self.vertical + i * self.space,

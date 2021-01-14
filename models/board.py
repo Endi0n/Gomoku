@@ -8,7 +8,7 @@ class Board:
 
     def __init__(self, size=19):
         self.size = size
-        self.matrix = np.zeros((size, size), dtype=np.uint8)
+        self.board = np.zeros((size, size), dtype=np.uint8)
 
     def place(self, location, piece):
         self.board[tuple(location)] = piece
@@ -57,6 +57,6 @@ class Board:
             check_rows(Board.diagonals(self.board)) or check_rows(Board.diagonals(np.flip(self.board, 1))) or None
 
     def copy(self):
-        board = Board()
+        board = Board(self.size)
         board.board[:, :] = self.board
         return board
