@@ -10,7 +10,10 @@ class Board:
         self.board = np.zeros((size, size), dtype=np.uint8)
 
     def place(self, location, piece):
-        pass
+        self.board[tuple(location)] = piece
+
+    def remove(self, location):
+        self.board[tuple(location)] = Board.EMPTY_CELL
 
     @staticmethod
     def _check_row(row):
@@ -21,7 +24,7 @@ class Board:
         count_p = 1
 
         for p in row[1:]:
-            if p != Board.EMPTY_CELL:
+            if p == Board.EMPTY_CELL:
                 continue
 
             if p == last_p:
@@ -34,6 +37,13 @@ class Board:
 
         return None
 
+    @staticmethod
+    def diagonals(board):
+        diagonals = []
+        for i in range(-board.shape[0]+1, board.shape[0]-1):
+            diagonals.append(np.diag(board, i))
+        return diagonals
+
     def is_finished(self):
         def check_rows(rows):
             for row in rows:
@@ -42,4 +52,10 @@ class Board:
                 if winner:
                     return winner
 
-        return check_rows(self.board) or check_rows(self.board.T) or None
+        return check_rows(self.board) or check_rows(self.board.T) or\
+            check_rows(Board.diagonals(self.board)) or check_rows(Board.diagonals(np.flip(self.board, 1))) or None
+
+    def copy(self):
+        board = Board()
+        board.board[:, :] = self.board
+        return board
