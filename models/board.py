@@ -7,7 +7,8 @@ class Board:
     PIECE_B = 2
 
     def __init__(self, size=19):
-        self.board = np.zeros((size, size), dtype=np.uint8)
+        self.size = size
+        self.matrix = np.zeros((size, size), dtype=np.uint8)
 
     def place(self, location, piece):
         self.board[tuple(location)] = piece
