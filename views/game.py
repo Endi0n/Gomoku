@@ -32,6 +32,23 @@ class Game(GomokuView):
 
         self.board.matrix[14][1] = 2
 
+    def handle_click(self, position):
+        super().handle_click(position)
+
+        pos_x, pos_y = position
+
+        print(pos_x, pos_y)
+
+        pos_x -= self.vertical
+        pos_y -= self.top + self.horizontal
+
+        pos_x /= self.space
+        pos_y /= self.space
+
+        pos_x, pos_y = int(round(pos_x)), int(round(pos_y))
+
+        self.board.matrix[pos_x][pos_y] = 1
+
     def render_board(self):
         for x in range(self.board.size):
             self.draw_line((self.vertical + x * self.space, self.top + self.horizontal),

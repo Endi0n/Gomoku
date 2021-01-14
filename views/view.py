@@ -12,8 +12,10 @@ class View(ABC):
     def handle_event(self, event):
         if event.type != pygame.MOUSEBUTTONDOWN:
             return
+        self.handle_click(pygame.mouse.get_pos())
 
-        mouse_x, mouse_y = pygame.mouse.get_pos()
+    def handle_click(self, position):
+        mouse_x, mouse_y = position
 
         for btn in self.buttons:
             position, size = btn[0]
