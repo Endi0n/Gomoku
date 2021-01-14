@@ -33,7 +33,10 @@ class Game(GomokuView):
 
         pos_x, pos_y = position
 
-        print(pos_x, pos_y)
+        if not (self.vertical - self.space // 2 <= pos_x <= globals.WIDTH - self.vertical + self.space // 2
+                and self.horizontal + Game.PADDING_TOP - self.space // 2 <= pos_y <= globals.HEIGHT - self.horizontal
+                + self.space // 2):
+            return
 
         pos_x -= self.vertical
         pos_y -= self.top + self.horizontal
@@ -46,6 +49,8 @@ class Game(GomokuView):
         self.board.board[pos_x][pos_y] = 2
         next_move(self.board)
 
+        print(self.board.is_finished())
+
 
     def render_board(self):
         for x in range(self.board.size):
@@ -56,6 +61,12 @@ class Game(GomokuView):
             self.draw_line((self.vertical, self.top + self.horizontal + x * self.space),
                            (globals.WIDTH - self.vertical, self.top + self.horizontal + x * self.space),
                            1, (0, 0, 0))
+
+    def render_indexes(self):
+        for x in range(self.board.size):
+            self.write(str(x), 10, (self.vertical + x * self.space, self.top + self.horizontal - 10), (0, 0, 0), center=True)
+
+            self.write(str(x), 10, (self.vertical - 10, self.top + self.horizontal + x * self.space), (0, 0, 0), center=True)
 
     def render_pieces(self):
         for i in range(self.board.size):
@@ -75,3 +86,4 @@ class Game(GomokuView):
 
         self.render_board()
         self.render_pieces()
+        self.render_indexes()
