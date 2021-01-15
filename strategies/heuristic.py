@@ -40,8 +40,8 @@ patterns = {'11111': 120 ** 2,
             '0110110': 10 ** 2,
             '01111': 8 ** 2,
             '10111': 8 ** 2,
-            '010110': 4 ** 2,
-            '10110': 4 ** 2,
+            '010110': 4.5 ** 2,
+            '10110': 4.5 ** 2,
             '01110': 4 ** 2,
             '11100': 2 ** 2,
             '01100': 2,
@@ -55,27 +55,33 @@ patterns = {'11111': 120 ** 2,
             '22122': 100 ** 2,
             '21222': 100 ** 2,
             '22221': 100 ** 2,
-            '02220': -7 ** 2}
+            '02220': -7 ** 2,
+            '2020': -7 ** 2,
+            '020220': -8 ** 2,
+            }
 c = list(map(re.compile, list(patterns.keys()) + ([s[::-1] for s in patterns.keys()])))
 c.sort(key=lambda k: len(k.pattern), reverse=True)
 
 
 def next_move(board):
+    board_original = board
+    board = board.copy()
+
     global last_score, c, patterns
 
     options = []
     for move in moves(board.board):
         board.place(move, 1)
         score = evaluate(board.board, patterns, c)
-        print(score, last_score, move)
+        # print(score, last_score, move)
         score = score - last_score
         options.append((score, move))
         board.remove(move)
-    print()
+    # print()
 
     options.sort(key=lambda k: k[0], reverse=True)
     options = [option for option in options if option[0] == options[0][0]]
 
     choice = random.choice(options)
     last_score += choice[0]
-    board.place(choice[1], 1)
+    board_original.place(choice[1], 1)

@@ -1,5 +1,7 @@
 import globals
 import pygame
+import sys
+
 
 # Window initialization
 pygame.display.set_caption('Gomoku')
@@ -18,3 +20,5 @@ while running:
 
     globals.CURRENT_VIEW.render()
     pygame.display.flip()
+
+sys.exit()
