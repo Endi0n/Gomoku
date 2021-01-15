@@ -1,5 +1,6 @@
 import re
 import numpy as np
+import random
 
 
 def moves(board):
@@ -7,78 +8,68 @@ def moves(board):
 
 
 def evaluate(board, patterns, cl):
-    total_score = 0
+    def sub_evaluate(line):
+        score = 0
+        for c in cl:
+            for match in re.findall(c, line):
+                score += patterns.get(match, patterns.get(match[::-1], 0))
+        return score
+
     score = 0
 
-    max_score = 0
     for i, row in enumerate(board):
-        s = ''.join(map(str, row))
-        for c in cl:
-            for match in re.findall(c, s):
-                score += patterns.get(match, patterns.get(match[::-1], 0))
-                max_score = max(score, max_score)
-    total_score += max_score
+        score += sub_evaluate(''.join(map(str, row)))
 
-    max_score = 0
     for i, row in enumerate(board.T):
-        s = ''.join(map(str, row))
-        for c in cl:
-            for match in re.findall(c, s):
-                score += patterns.get(match, patterns.get(match[::-1], 0))
-                max_score = max(score, max_score)
-    total_score += max_score
+        score += sub_evaluate(''.join(map(str, row)))
 
-    max_score = 0
     for i in range(-board.shape[0] + 1, board.shape[0] - 1):
-        s = ''.join(map(str, np.diag(board, i)))
-        for c in cl:
-            for match in re.findall(c, s):
-                score += patterns.get(match, patterns.get(match[::-1], 0))
-                max_score = max(score, max_score)
-    total_score += max_score
+        score += sub_evaluate(''.join(map(str, np.diag(board, i))))
 
-    max_score = 0
     flipped_board = np.flip(board, 1)
     for i in range(-flipped_board.shape[0] + 1, flipped_board.shape[0] - 1):
-        s = ''.join(map(str, np.diag(flipped_board, i)))
-        for c in cl:
-            for match in re.findall(c, s):
-                score += patterns.get(match, patterns.get(match[::-1], 0))
-                max_score = max(score, max_score)
-    total_score += max_score
+        score += sub_evaluate(''.join(map(str, np.diag(flipped_board, i))))
 
     return score
 
 
 last_score = 0
+patterns = {'11111': 120 ** 2,
+            '011110': 9 ** 2,
+            '01111': 8 ** 2,
+            '01110': 4 ** 2,
+            '11100': 2 ** 2,
+            '01100': 2,
+            '12': 1,
+            '212': 2,
+            '221': 3,
+            '02221': 6 ** 2,
+            '22210': 5 ** 2,
+            '2212': 10 ** 2,
+            '22122': 100 ** 2,
+            '21222': 100 ** 2,
+            '22221': 100 ** 2,
+            '02220': -7 ** 2}
+c = list(map(re.compile, list(patterns.keys()) + ([s[::-1] for s in patterns.keys()])))
+c.sort(key=lambda k: len(k.pattern), reverse=True)
 
 
 def next_move(board):
-    global last_score
-    patterns = {'11111': 12 ** 2,
-                '011110': 9 ** 2,
-                '01111': 8 ** 2,
-                '01110': 4 ** 2,
-                '11100': 2 ** 2,
-                '01100': 1,
-                '212': 1,
-                '221': 3,
-                '02221': 6 ** 2,
-                '22210': 5 ** 2,
-                '2212': 10 ** 2,
-                '22122': 10 ** 2,
-                '21222': 10 ** 2,
-                '22221': 10 ** 2}
-    c = list(map(re.compile, list(patterns.keys()) + ([s[::-1] for s in patterns.keys()])))
-    best = (None, None)
+    global last_score, c, patterns
+
+    options = []
     for move in moves(board.board):
         board.place(move, 1)
         score = evaluate(board.board, patterns, c)
         print(score, last_score, move)
         score = score - last_score
-        if best[0] is None or score > best[0]:
-            best = score, move
+        options.append((score, move))
         board.remove(move)
     print()
-    last_score += best[0]
-    board.place(best[1], 1)
+
+    options.sort(key=lambda k: k[0], reverse=True)
+    options = [option for option in options if option[0] == options[0][0]]
+
+    choice = random.choice(options)
+    last_score += choice[0]
+    board.place(choice[1], 1)
