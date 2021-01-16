@@ -1,6 +1,7 @@
 from views.gomoku import GomokuView
 from strategies.heuristic import next_move
 import globals
+from threading import Thread
 
 
 class Game(GomokuView):
@@ -28,8 +29,26 @@ class Game(GomokuView):
 
         self.top = Game.PADDING_TOP
 
+        self.computer_turn = False
+
+        thread = Thread(target=self.computer_move, daemon=True)
+        thread.start()
+
+        # next_move(self.board)
+
+    def computer_move(self):
+        while True:
+            while not self.computer_turn:
+                continue
+            next_move(self.board)
+            self.computer_turn = False
+            print(self.board.is_finished())
+
     def handle_click(self, position):
         super().handle_click(position)
+
+        if self.computer_turn:
+            return
 
         pos_x, pos_y = position
 
@@ -47,10 +66,9 @@ class Game(GomokuView):
         pos_x, pos_y = int(round(pos_x)), int(round(pos_y))
 
         self.board.board[pos_x][pos_y] = 2
-        next_move(self.board)
+        self.computer_turn = True
 
         print(self.board.is_finished())
-
 
     def render_board(self):
         for x in range(self.board.size):
@@ -81,9 +99,14 @@ class Game(GomokuView):
                                   self.top + self.horizontal + j * self.space),
                                  (255, 255, 255) if player1 else (0, 0, 0))
 
+    def render_status(self):
+        self.draw_circle(10, (60, 50), (255, 255, 255) if self.computer_turn else (0, 0, 0))
+        self.write('moves', 15, (100, 50), (0, 0, 0), center=True)
+
     def render(self):
         super().render()
 
         self.render_board()
         self.render_pieces()
         self.render_indexes()
+        self.render_status()
