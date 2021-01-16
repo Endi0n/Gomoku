@@ -14,8 +14,8 @@ class Heuristic(Strategy):
                          '0110110': 10 ** 2,
                          '01111': 8 ** 2,
                          '10111': 8 ** 2,
-                         '010110': 4 ** 2,
-                         '10110': 4 ** 2,
+                         '010110': 4.5 ** 2,
+                         '10110': 4.5 ** 2,
                          '01110': 4 ** 2,
                          '11100': 2 ** 2,
                          '01100': 2,
@@ -29,7 +29,10 @@ class Heuristic(Strategy):
                          '22122': 100 ** 2,
                          '21222': 100 ** 2,
                          '22221': 100 ** 2,
-                         '02220': -7 ** 2}
+                         '02220': -7 ** 2,
+                         '2020': -7 ** 2,
+                         '020220': -8 ** 2,
+                         }
         self.c = list(map(re.compile, list(self.patterns.keys()) + ([s[::-1] for s in self.patterns.keys()])))
         self.c.sort(key=lambda k: len(k.pattern), reverse=True)
 
