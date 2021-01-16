@@ -63,7 +63,8 @@ class MenuStart(GomokuView):
                 globals.strategy = strategies.AbPruning(1)
             elif algorithm == 'MTSC':
                 globals.strategy = strategies.MonteCarloTreeSearch(1)
-
+            elif algorithm == 'Neural Network':
+                globals.strategy = strategies.NeuralNetwork(1)
             if not globals.GAME_VIEW or globals.GAME_VIEW.board.is_finished():
                 globals.GAME_VIEW = Game(self.screen, Board(size=self.size))
 
