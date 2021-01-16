@@ -25,12 +25,9 @@ class Board:
         count_p = 1
 
         for p in row[1:]:
-            if p == Board.EMPTY_CELL:
-                continue
-
             if p == last_p:
                 count_p += 1
-                if count_p == 5:
+                if count_p == 5 and last_p != Board.EMPTY_CELL:
                     return last_p
             else:
                 last_p = p
