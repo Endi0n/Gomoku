@@ -1,6 +1,7 @@
 import pygame
 import views
 from models.board import Board
+from strategies.heuristic import Heuristic
 
 WIDTH = 532
 HEIGHT = 582
@@ -9,7 +10,10 @@ pygame.init()
 
 SCREEN = pygame.display.set_mode((WIDTH, HEIGHT))
 
-MENU_VIEW = views.Menu(SCREEN)
-GAME_VIEW = views.Game(SCREEN, Board(size=15))
+MENU_VIEW = views.MenuStart(SCREEN)
+GAME_VIEW = None
 
-CURRENT_VIEW = GAME_VIEW
+CURRENT_VIEW = MENU_VIEW
+
+strategy = None
+

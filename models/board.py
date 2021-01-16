@@ -57,6 +57,6 @@ class Board:
             check_rows(Board.diagonals(self.board)) or check_rows(Board.diagonals(np.flip(self.board, 1))) or None
 
     def copy(self):
-        board = Board(self.size)
+        board = Board(size=self.size)
         board.board[:, :] = self.board
         return board

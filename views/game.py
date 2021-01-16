@@ -1,5 +1,4 @@
 from views.gomoku import GomokuView
-from strategies.heuristic import next_move
 import globals
 from threading import Thread
 
@@ -30,24 +29,38 @@ class Game(GomokuView):
         self.top = Game.PADDING_TOP
 
         self.computer_turn = False
+        self.finished = None
 
-        thread = Thread(target=self.computer_move, daemon=True)
-        thread.start()
+        self.thread = Thread(target=self.computer_move, daemon=True)
+        self.thread.start()
 
-        # next_move(self.board)
+        self.add_button('Back', 14,
+                        (255, 255, 255), (70, 70, 70),
+                        (globals.WIDTH // 2, globals.HEIGHT - 25),
+                        (globals.WIDTH // 4, 20),
+                        self.back_selected)
+
+
+    def back_selected(self):
+        globals.CURRENT_VIEW = globals.MENU_VIEW
 
     def computer_move(self):
         while True:
-            while not self.computer_turn:
+            while not self.computer_turn and self.finished is None:
                 continue
-            next_move(self.board)
+            if self.finished is not None:
+                return
+            globals.strategy.next_move(self.board)
             self.computer_turn = False
-            print(self.board.is_finished())
+            self.finished = self.board.is_finished()
 
     def handle_click(self, position):
         super().handle_click(position)
 
         if self.computer_turn:
+            return
+
+        if self.finished is not None:
             return
 
         pos_x, pos_y = position
@@ -66,9 +79,9 @@ class Game(GomokuView):
         pos_x, pos_y = int(round(pos_x)), int(round(pos_y))
 
         self.board.board[pos_x][pos_y] = 2
-        self.computer_turn = True
 
-        print(self.board.is_finished())
+        self.finished = self.board.is_finished()
+        self.computer_turn = True
 
     def render_board(self):
         for x in range(self.board.size):
@@ -100,8 +113,16 @@ class Game(GomokuView):
                                  (255, 255, 255) if player1 else (0, 0, 0))
 
     def render_status(self):
-        self.draw_circle(10, (60, 50), (255, 255, 255) if self.computer_turn else (0, 0, 0))
-        self.write('moves', 15, (100, 50), (0, 0, 0), center=True)
+        if self.finished is None:
+            self.draw_circle(10, (60, 50), (255, 255, 255) if self.computer_turn else (0, 0, 0))
+            self.write('moves', 15, (100, 50), (0, 0, 0), center=True)
+        else:
+            self.draw_circle(10, (60, 50), (255, 255, 255) if not self.computer_turn else (0, 0, 0))
+            self.write('won', 15, (100, 50), (0, 0, 0), center=True)
+
+            if self.thread:
+                self.thread.join()
+                self.thread = None
 
     def render(self):
         super().render()
@@ -110,3 +131,5 @@ class Game(GomokuView):
         self.render_pieces()
         self.render_indexes()
         self.render_status()
+
+        self.render_buttons()
