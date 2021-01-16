@@ -21,11 +21,12 @@ class Node:
 
 
 class MonteCarloTreeSearch(Strategy):
-    def __init__(self):
+    def __init__(self, player):
+        self.player = player
         self.last_tree = None
         self.last_move_board = None
 
-    def next_move(self, board, player):
+    def next_move(self, board):
         tree = None
         if self.last_tree:
             for child in self.last_tree.children:
@@ -39,7 +40,7 @@ class MonteCarloTreeSearch(Strategy):
                             print('HAHA')
                             break
         if tree is None:
-            tree = Node(board=board, player=player)
+            tree = Node(board=board, player=self.player)
         for _ in range(10):
             leaf, height = MonteCarloTreeSearch.selection(tree)
             new_node = MonteCarloTreeSearch.expansion(leaf, height)
@@ -51,8 +52,7 @@ class MonteCarloTreeSearch(Strategy):
         for i, child in enumerate(tree.children[1:], 1):
             if child.n > tree.children[m].n:
                 m = i
-        # print(m)
-        # print(tree.children[m].board.board)
+
         self.last_move_board = board.board[:, :] = tree.children[m].board.board
         self.last_tree = tree
 
@@ -101,27 +101,25 @@ class MonteCarloTreeSearch(Strategy):
 
     @staticmethod
     def simulation(tree):
-        heuristic = Heuristic()
+        heuristic1 = Heuristic(player=1)
+        heuristic2 = Heuristic(player=2)
         board = tree.board.copy()
         player = tree.player
-        x = 0
         p = random.randint(1, 3)
         while True:
             winner = board.is_finished()
             if winner:
                 return winner
-            if x == 4:
-                if Heuristic.evaluate(board.board, heuristic.patterns, heuristic.c) < 0:
-                    return 2
-                else:
-                    return 1
             if player == p:
-                heuristic.next_move(board, player)
+                if player == 1:
+                    heuristic1.next_move(board)
+                else:
+                    heuristic2.next_move(board)
+                # heuristic.next_move(board, player)
             else:
                 m = np.argwhere(board.board == 0)
                 board.place(m[np.random.randint(0, len(m))], player)
             player = int(not (player - 1)) + 1
-            x += 1
 
     @staticmethod
     def backpropagation(leaf, result):
@@ -140,7 +138,7 @@ class MonteCarloTreeSearch(Strategy):
 def play(board):
     player = 1
     print(board.board)
-    s = MonteCarloTreeSearch()
+    s = MonteCarloTreeSearch(player)
     while True:
         winner = board.is_finished()
         # print('win:', winner)
@@ -148,7 +146,7 @@ def play(board):
             print('Winner:', winner)
             break
         if player == 1:
-            s.next_move(board, 1)
+            s.next_move(board)
         else:
             pos = list(map(int, input('Position: ').split()))
             board.place(pos, 2)

@@ -1,13 +1,14 @@
 import re
 import numpy as np
 import random
-from strategies.utils import contour
+from strategies.utils import contour, reverse_players
 from strategies.strategy import Strategy
 
 
 class Heuristic(Strategy):
-    def __init__(self):
+    def __init__(self, player):
         self.last_score = 0
+        self.player = player
         self.patterns = {'11111': 120 ** 2,
                          '011110': 9 ** 2,
                          '0111010': 9 ** 2,
@@ -64,16 +65,19 @@ class Heuristic(Strategy):
 
         return score
 
-    def next_move(self, board, player):
-
+    def next_move(self, board):
+        board_copy = board.copy()
         options = []
         for move in np.argwhere(board.board == 0):
-            board.place(move, player)
-            score = (-1) ** (player - 1) * Heuristic.evaluate(board.board, self.patterns, self.c)
+            board_copy.place(move, self.player)
+            if self.player == 1:
+                score = Heuristic.evaluate(board_copy.board, self.patterns, self.c)
+            else:
+                score = Heuristic.evaluate(reverse_players(board_copy.board), self.patterns, self.c)
             # print(score, last_score, move)
             score = score - self.last_score
             options.append((score, move))
-            board.remove(move)
+            board_copy.remove(move)
         # print()
 
         options.sort(key=lambda k: k[0], reverse=True)
@@ -81,4 +85,4 @@ class Heuristic(Strategy):
 
         choice = random.choice(options)
         self.last_score += choice[0]
-        board.place(choice[1], player)
+        board.place(choice[1], self.player)
