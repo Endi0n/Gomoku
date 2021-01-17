@@ -3,6 +3,7 @@ from strategies.heuristic import Heuristic
 import re
 from strategies.strategy import Strategy
 from strategies.utils import contour, reverse_players
+import random
 
 
 class Node:
@@ -54,10 +55,12 @@ class AbPruning(Strategy):
         tree = Node()
         self._move(ab=True if self.player == 1 else False, node=tree, board=board)
         c, row, col = contour(board.board, 3)
+        options = []
+        x = np.argwhere(c == 0)
         for i, node in enumerate(tree.children):
             if (node.beta == tree.alpha and self.player == 1) or (node.alpha == tree.beta and self.player == 2):
-                board.place(np.argwhere(c == 0)[i] + [row, col], self.player)
-                break
+                options.append(x[i] + [row, col])
+        board.place(random.choice(options), self.player)
 
     def _score(self, board, player):
         if player == 1:
@@ -73,11 +76,11 @@ class AbPruning(Strategy):
             b = board.copy()
             b.place(mv + [i, j], 1 if ab else 2)
             node.add_child(n)
-            if height + 2 == self.max_height:
+            if height + 2 == self.max_height or b.is_finished():
                 if ab is False:
-                    n.alpha = self._score(b, 1)
+                    n.alpha = self._score(b, 2)
                 else:
-                    n.beta = self._score(b, 2)
+                    n.beta = self._score(b, 1)
             else:
                 self._move(not ab, node=n, height=height+1, board=b)
 

@@ -78,6 +78,8 @@ class Game(GomokuView):
 
         pos_x, pos_y = int(round(pos_x)), int(round(pos_y))
 
+        if self.board.board[pos_x, pos_y] != self.board.EMPTY_CELL:
+            return
         self.board.board[pos_x][pos_y] = 2
 
         self.finished = self.board.is_finished()
